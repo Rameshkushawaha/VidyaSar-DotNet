@@ -1,0 +1,22 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.DotSettings.user
+
+## Rider
+.idea/
+
+## VS Code
+.vscode/
+
+## Environment / secrets
+appsettings.Production.json
+secrets.json
+
+## Build artifacts
+*.nupkg
+*.snupkg
+publish/
