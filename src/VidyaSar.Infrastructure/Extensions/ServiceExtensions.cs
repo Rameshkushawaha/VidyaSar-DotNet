@@ -16,8 +16,17 @@ public static class InfrastructureServiceExtensions
         IConfiguration config)
     {
         // Database
+        // ✅ With this - auto retries on transient failures
         services.AddDbContext<AppDbContext>(opt =>
-            opt.UseNpgsql(config.GetConnectionString("DefaultConnection")));
+            opt.UseNpgsql(config.GetConnectionString("DefaultConnection"), npgsqlOpt =>
+            {
+                npgsqlOpt.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(10),
+                    errorCodesToAdd: null
+                );
+                npgsqlOpt.CommandTimeout(60);
+            }));
 
         // Repositories
         services.AddScoped<IUserRepository,          UserRepository>();
