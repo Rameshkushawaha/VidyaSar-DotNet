@@ -82,16 +82,13 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    // ✅ New
+// ✅ New
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "VidyaSar ERP API v1");
         c.RoutePrefix = "swagger"; // Swagger at /swagger
 });
-}
 
 app.UseCors("AllowAll");
 app.UseAuthentication();
