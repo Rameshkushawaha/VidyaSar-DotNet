@@ -27,16 +27,16 @@ public class JwtService : IJwtService
     {
         var claims = new List<Claim>
         {
-            new("userid",    user.Userid),
-            new("role",      user.Role?.ToString()    ?? ""),
-            new("name",      user.Name               ?? ""),
-            new("cl_col_id", user.ClColId?.ToString() ?? ""),
-            new("branchId",  user.BranchId?.ToString() ?? ""),
-            new("email",     user.Emailid            ?? ""),
-            new("mob_no",    user.MobNo?.ToString()   ?? ""),
-            new("telNo",     user.Telno              ?? ""),
-            new("status",    user.Active?.ToString()  ?? ""),
-            new(JwtRegisteredClaimNames.Sub, user.Userid),
+            new("userid",    user.userid),
+            new("role",      user.role?.ToString()    ?? ""),
+            new("name",      user.name               ?? ""),
+            new("cl_col_id", user.cl_col_id?.ToString() ?? ""),
+            new("branchId",  user.branch_id?.ToString() ?? ""),
+            new("email",     user.emailid            ?? ""),
+            new("mob_no",    user.mob_no?.ToString()   ?? ""),
+            new("telNo",     user.telno              ?? ""),
+            new("status",    user.active?.ToString()  ?? ""),
+            new(JwtRegisteredClaimNames.Sub, user.userid),
             new(JwtRegisteredClaimNames.Iat,
                 DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
                 ClaimValueTypes.Integer64)

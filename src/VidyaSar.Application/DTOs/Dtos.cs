@@ -64,7 +64,7 @@ public class InstituteDto
 {
     public long? ClColId { get; set; }
     public string? ClColName { get; set; }
-    public bool? BitIsActive { get; set; }
+    public string BitIsActive { get; set; }
     public string? Address { get; set; }
     public long City { get; set; }
     public long State { get; set; }
@@ -110,4 +110,132 @@ public class SessionDto
     public bool? AdmissionBitIsActive { get; set; }
     public string? SessionYear { get; set; }
     public DateTime? AdmissionDate { get; set; }
+}
+
+public class DegreeDto
+    {
+        public long? Category_Id { get; set; }
+
+        public string Category_Description { get; set; }
+
+        public string Degree_Name { get; set; }
+
+        public bool bitIsActive { get; set; }
+
+        public long CL_Col_Id { get; set; }
+
+        public string Roll_Format { get; set; }
+
+        public string Roll_Code { get; set; }
+
+        public string Col_FullAddress { get; set; }
+
+        public string issueBooklimit { get; set; }
+
+        public decimal? Issue_Day { get; set; }
+    }
+
+public class BranchDto
+{
+    public long? BranchId { get; set; }
+
+    public string BranchName { get; set; }
+
+    public string FullName { get; set; }
+
+    public string BranchNo { get; set; }
+
+    public long CategoryId { get; set; }
+
+    public long CollegeId { get; set; }
+
+    public bool BitIsActive { get; set; }
+
+    public string HODId { get; set; }
+
+    public string DegreeType { get; set; }
+
+    public bool? DayCare { get; set; }
+
+    public int NoOfSem { get; set; }
+}
+
+public class BranchResponseDto
+{
+    public long BranchId { get; set; }
+
+    public string BranchName { get; set; }
+
+    public string FullName { get; set; }
+
+    public string BranchNo { get; set; }
+
+    public long CategoryId { get; set; }
+
+    public long CollegeId { get; set; }
+
+    public string BitIsActive { get; set; }
+}
+
+public class PaginationDto
+{
+    public int PageNumber { get; set; } = 1;
+
+    public int PageSize { get; set; } = 10;
+
+    public string? SearchText { get; set; }
+}
+
+public class SemesterDto
+{
+    public long? SemesterId { get; set; }
+
+    public string SemesterName { get; set; }
+
+    public long BranchId { get; set; }
+
+    public string BitIsActive { get; set; }
+
+    public string BitEvenOdd { get; set; }
+
+    public string SemesterNo { get; set; }
+
+    public long CollegeId { get; set; }
+
+    public long Years { get; set; }
+
+    public decimal ElectiveSittingArrangement { get; set; }
+
+    public TimeSpan? FromTime { get; set; }
+
+    public TimeSpan? ToTime { get; set; }
+
+    public decimal? LevertyTime { get; set; }
+
+    public decimal? RatePerMinute { get; set; }
+
+    public string IsTeacher { get; set; }
+
+    public string UniversitySemesterCode { get; set; }
+
+    public long? DegreeId { get; set; }
+}
+
+public class SemesterResponseDto
+{
+    public long SemesterId { get; set; }
+
+    public string SemesterName { get; set; }
+
+    public string SemesterNo { get; set; }
+
+    public string BitEvenOdd { get; set; }
+
+    public long BranchId { get; set; }
+
+    public long CollegeId { get; set; }
+
+    public long Years { get; set; }
+
+    public string BitIsActive { get; set; }
 }

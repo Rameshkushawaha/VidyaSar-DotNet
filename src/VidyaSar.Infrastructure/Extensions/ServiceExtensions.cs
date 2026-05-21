@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +12,7 @@ namespace VidyaSar.Infrastructure.Extensions;
 
 public static class InfrastructureServiceExtensions
 {
-    public static IServiceCollection AddInfrastructure(
+    public static async Task<IServiceCollection> AddInfrastructure(
         this IServiceCollection services,
         IConfiguration config)
     {
@@ -35,6 +36,9 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IEducationGroupRepository, EducationGroupRepository>();
         services.AddScoped<ISessionRepository,       SessionRepository>();
         services.AddScoped<IConfigurationRepository, ConfigurationRepository>();
+        services.AddScoped<IDegreeRepository,        DegreeRepository>();
+        services.AddScoped<IBranchRepository ,       BranchRepository>();
+        services.AddScoped<ISemesterRepository,      SemesterRepository>();
 
         // Services
         services.AddScoped<IJwtService,             JwtService>();
@@ -44,7 +48,9 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IInstituteService,       InstituteService>();
         services.AddScoped<IEducationGroupService,  EducationGroupService>();
         services.AddScoped<ISessionService,         SessionService>();
-
+        services.AddScoped<IDegreeServices,         DegreeService>();
+        services.AddScoped<IBranchService,          BranchService>();
+        services.AddScoped<ISemesterService,        SemesterService>();
         return services;
     }
 }

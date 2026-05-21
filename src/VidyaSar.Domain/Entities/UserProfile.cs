@@ -1,138 +1,109 @@
-using System.ComponentModel.DataAnnotations;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VidyaSar.Domain.Entities;
 
-[Table("userprofile", Schema = "public")]
-public class UserProfile
+[Table("userprofile")]
+public partial class UserProfile
 {
-    [Key]
-    [Column("userid")]
-    public string Userid { get; set; } = null!;
+    public string userid { get; set; } = null!;
 
-    [Column("role")]
-    public int? Role { get; set; }
+    public int? role { get; set; }
 
-    [Column("name")]
-    public string? Name { get; set; }
+    public string? name { get; set; }
 
-    [Column("known_as")]
-    public string? KnownAs { get; set; }
+    public string? known_as { get; set; }
 
-    [Column("emailid")]
-    public string? Emailid { get; set; }
+    public string? emailid { get; set; }
 
-    [Column("telno")]
-    public string? Telno { get; set; }
+    public string? telno { get; set; }
 
-    [Column("title")]
-    public string? Title { get; set; }
+    public string? title { get; set; }
 
-    [Column("makercode")]
-    public string? Makercode { get; set; }
+    public string? makercode { get; set; }
 
-    [Column("makerdatetime")]
-    public DateTime? Makerdatetime { get; set; }
+    public DateTime? makerdatetime { get; set; }
 
-    [Column("password")]
-    public string? Password { get; set; }
+    public string? password { get; set; }
 
-    [Column("active")]
-    public long? Active { get; set; }
+    public long? active { get; set; }
 
-    [Column("qualifications")]
-    public string? Qualifications { get; set; }
+    public string? qualifications { get; set; }
 
-    [Column("perm_address")]
-    public string? PermAddress { get; set; }
+    public string? perm_address { get; set; }
 
-    [Column("current_address")]
-    public string? CurrentAddress { get; set; }
+    public string? current_address { get; set; }
 
-    [Column("phone_no")]
-    public long? PhoneNo { get; set; }
+    public long? phone_no { get; set; }
 
-    [Column("dob")]
-    public DateTime? Dob { get; set; }
+    public DateTime? dob { get; set; }
 
-    [Column("gender")]
-    public string? Gender { get; set; }
+    public string? gender { get; set; }
 
-    [Column("mob_no")]
-    public long? MobNo { get; set; }
+    public long? mob_no { get; set; }
 
-    [Column("service_type")]
-    public string? ServiceType { get; set; }
+    public string? service_type { get; set; }
 
-    [Column("flag")]
-    public string? Flag { get; set; }
+    public string? flag { get; set; }
 
-    [Column("branch_id")]
-    public long? BranchId { get; set; }
+    public long? branch_id { get; set; }
 
-    [Column("cl_col_id")]
-    public long? ClColId { get; set; }
+    public long? cl_col_id { get; set; }
 
-    [Column("class_type")]
-    public string? ClassType { get; set; }
+    public string? class_type { get; set; }
 
-    [Column("attendflag")]
-    public string? Attendflag { get; set; }
+    public string? attendflag { get; set; }
 
-    [Column("empatt")]
-    public string? Empatt { get; set; }
+    public string? empatt { get; set; }
 
-    [Column("punchid")]
-    public string? Punchid { get; set; }
+    public string? punchid { get; set; }
 
-    [Column("fathername")]
-    public string? Fathername { get; set; }
+    public string? fathername { get; set; }
 
-    [Column("isfirstlogin")]
-    public string? Isfirstlogin { get; set; }
+    public string? isfirstlogin { get; set; }
 
-    [Column("designation_id")]
-    public long? DesignationId { get; set; }
+    public long? designation_id { get; set; }
 
-    [Column("tokenurl")]
-    public string? Tokenurl { get; set; }
+    public string? tokenurl { get; set; }
 
-    [Column("tokenexpirydate")]
-    public DateTime? Tokenexpirydate { get; set; }
+    public DateTime? tokenexpirydate { get; set; }
 
-    [Column("firstname")]
-    public string? Firstname { get; set; }
+    public string? firstname { get; set; }
 
-    [Column("middlename")]
-    public string? Middlename { get; set; }
+    public string? middlename { get; set; }
 
-    [Column("lastname")]
-    public string? Lastname { get; set; }
+    public string? lastname { get; set; }
 
-    [Column("ismarried")]
-    public bool? Ismarried { get; set; }
+    public bool? ismarried { get; set; }
 
-    [Column("em_org_code")]
-    public string? EmOrgCode { get; set; }
+    public string? em_org_code { get; set; }
 
-    [Column("lastlogin")]
-    public DateTime? Lastlogin { get; set; }
+    public DateTime? lastlogin { get; set; }
 
-    [Column("failedlogincount")]
-    public int? Failedlogincount { get; set; }
+    public int? failedlogincount { get; set; }
 
-    [Column("encryptedpassword")]
-    public string? Encryptedpassword { get; set; }
+    public string? encryptedpassword { get; set; }
 
-    [Column("oldpassword")]
-    public string? Oldpassword { get; set; }
+    public string? oldpassword { get; set; }
 
-    [Column("lastchangepassworddate")]
-    public DateTime? Lastchangepassworddate { get; set; }
+    public DateTime? lastchangepassworddate { get; set; }
 
-    [Column("imagepath")]
-    public string? Imagepath { get; set; }
+    public string? imagepath { get; set; }
 
-    [Column("signaturepath")]
-    public string? Signaturepath { get; set; }
+    public string? signaturepath { get; set; }
+
+    public virtual depat_master? branch { get; set; }
+
+    public virtual tbl_mst_collage? cl_col { get; set; }
+
+    public virtual ICollection<depat_master> depat_masters { get; set; } = new List<depat_master>();
+
+    public virtual tbl_designation_master? designation { get; set; }
+
+    public virtual col_rolemaster? roleNavigation { get; set; }
+
+    public virtual ICollection<tbl_mst_col_branch> tbl_mst_col_branches { get; set; } = new List<tbl_mst_col_branch>();
+
+    public virtual ICollection<tbl_mst_semister_detail> tbl_mst_semister_details { get; set; } = new List<tbl_mst_semister_detail>();
 }

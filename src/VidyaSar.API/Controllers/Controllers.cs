@@ -4,6 +4,7 @@ using VidyaSar.API.Middleware;
 using VidyaSar.Application.Common;
 using VidyaSar.Application.DTOs;
 using VidyaSar.Application.Interfaces;
+using VidyaSar.Domain.Entities;
 
 namespace VidyaSar.API.Controllers;
 
@@ -84,6 +85,17 @@ public class UniversityController : ControllerBase
         var result = await _service.AddUpdateUniversityAsync(dto, user.Userid);
         return Ok(result);
     }
+
+   [HttpGet("getUniversityList")]
+    public async Task<IActionResult> GetUniversityList([FromHeader] long categoryId)
+    {
+         var user = HttpContext.GetLoggedInUser();
+        if (user is null)
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
+
+        var result = await _service.GetUniversityList(categoryId);
+        return Ok(result);
+    }
 }
 
 // ──────────────────────────────────────────────
@@ -107,6 +119,17 @@ public class EducationGroupController : ControllerBase
             return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
 
         var result = await _service.AddUpdateGroupAsync(dto, user.Userid);
+        return Ok(result);
+    }
+
+    [HttpGet("getGroupList")]
+    public async Task<IActionResult> GetGroupList()
+    {
+         var user = HttpContext.GetLoggedInUser();
+        if (user is null)
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
+
+        var result = await _service.GetGroupListAsync();
         return Ok(result);
     }
 }
@@ -153,6 +176,163 @@ public class InstituteController : ControllerBase
             return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
 
         var result = await _service.AddUpdateInstituteAsync(dto, user.Userid);
+        return Ok(result);
+    }
+}
+
+// ──────────────────────────────────────────────
+//  Degree Controller  –  POST /api/degree/add-update
+// ──────────────────────────────────────────────
+[ApiController]
+[Route("api/degree")]
+[Authorize]
+public class DegreeController : ControllerBase
+{
+    private readonly IDegreeServices _service;
+
+    public DegreeController(IDegreeServices service) => _service = service;
+
+    /// <summary>Creates or updates an academic degree.</summary>
+    [HttpPost("add-update")]
+    public async Task<IActionResult> AddUpdateDegree([FromBody] DegreeDto dto)
+    {
+        var user = HttpContext.GetLoggedInUser();
+        if (user is null)
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
+        var result = await _service.AddUpdateDegreeAsync(dto,user.Userid);
+        return Ok(result);
+    }
+}
+
+// ──────────────────────────────────────────────
+//  Branch Controller  –  POST /api/branch/add-update
+// ──────────────────────────────────────────────
+
+[ApiController]
+[Route("api/[controller]")]
+public class BranchController : ControllerBase
+{
+    private readonly IBranchService _service;
+
+    public BranchController(IBranchService service)
+    {
+        _service = service;
+    }
+
+    [HttpPost("add-update")]
+    public async Task<IActionResult> AddUpdate(
+        [FromBody] BranchDto dto)
+    {
+        var user = HttpContext.GetLoggedInUser();
+        if (user is null)
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
+
+        var result =
+            await _service.AddUpdateAsync(dto, user.Userid);
+
+        if (result.Success)
+            return Ok(result);
+
+        return BadRequest(result);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(long id)
+    {
+        var user = HttpContext.GetLoggedInUser();
+        if (user is null)
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
+        var result = await _service.DeleteAsync(id);
+
+        if (result.Success)
+            return Ok(result);
+
+        return BadRequest(result);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(long id)
+    {
+        var user = HttpContext.GetLoggedInUser();
+        if (user is null)
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
+        var result = await _service.GetByIdAsync(id);
+
+        return Ok(result);
+    }
+
+    [HttpPost("pagination")]
+    public async Task<IActionResult> GetPaged(
+        [FromBody] PaginationDto dto)
+    {
+        var user = HttpContext.GetLoggedInUser();
+        if (user is null)
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
+        var result = await _service.GetPagedAsync(dto);
+
+        return Ok(result);
+    }
+}
+
+// ──────────────────────────────────────────────
+//  Branch Controller  –  POST /api/branch/add-update
+// ──────────────────────────────────────────────
+
+
+[ApiController]
+[Route("api/[controller]")]
+public class SemesterController : ControllerBase
+{
+    private readonly ISemesterService _service;
+
+    public SemesterController(ISemesterService service)
+    {
+        _service = service;
+    }
+
+    [HttpPost("add-update")]
+    public async Task<IActionResult> AddUpdate(
+        [FromBody] SemesterDto dto)
+    {
+        string userId =
+            User?.Identity?.Name ?? "System";
+
+        var result =
+            await _service.AddUpdateAsync(dto, userId);
+
+        if (result.Success)
+            return Ok(result);
+
+        return BadRequest(result);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(long id)
+    {
+        var result = await _service.DeleteAsync(id);
+
+        if (result.Success)
+            return Ok(result);
+
+        return BadRequest(result);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(long id)
+    {
+        var result =
+            await _service.GetByIdAsync(id);
+
+        return Ok(result);
+    }
+
+    [HttpPost("pagination")]
+    public async Task<IActionResult> GetPaged(
+        [FromBody] PaginationDto dto)
+    {
+        var result =
+            await _service.GetPagedAsync(dto);
+
         return Ok(result);
     }
 }
