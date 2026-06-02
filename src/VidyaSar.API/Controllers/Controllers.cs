@@ -335,6 +335,7 @@ public class DegreeController : ControllerBase
 // ──────────────────────────────────────────────
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class BranchController : ControllerBase
 {
@@ -406,6 +407,7 @@ public class BranchController : ControllerBase
 
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class SemesterController : ControllerBase
 {
@@ -458,6 +460,41 @@ public class SemesterController : ControllerBase
     {
         var result =
             await _service.GetPagedAsync(dto);
+
+        return Ok(result);
+    }
+}
+
+[ApiController]
+[Authorize]
+[Route("api/[controller]")]
+public class StudentController : ControllerBase
+{
+    private readonly IStudentService _service;
+    
+    public StudentController(IStudentService service)
+    {
+        _service = service;
+    }
+
+    [HttpPost("add-student")]
+    public async Task<IActionResult> AddStudent(
+        [FromBody] StudentDto dto)
+    {
+        var result =
+            await _service.AddStudentAsync(dto);
+
+        if (result.Success)
+            return Ok(result);
+
+        return BadRequest(result);
+    }
+
+    [HttpGet("{rollNo}")]
+    public async Task<IActionResult> GetByRollNo(string rollNo)
+    {
+        var result =
+            await _service.GetStudentByIdAsync(rollNo);
 
         return Ok(result);
     }
