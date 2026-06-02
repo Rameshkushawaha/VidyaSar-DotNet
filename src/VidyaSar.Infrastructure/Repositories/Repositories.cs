@@ -3,6 +3,7 @@ using VidyaSar.Application.DTOs;
 using VidyaSar.Application.Interfaces;
 using VidyaSar.Domain.Entities;
 using VidyaSar.Infrastructure.Data;
+using VidyaSar.Infrastructure.Helpers;
 
 namespace VidyaSar.Infrastructure.Repositories;
 
@@ -26,6 +27,62 @@ public class UserRepository : IUserRepository
             _db.userprofiles.Add(user);
         await _db.SaveChangesAsync();
     }
+    public async Task CreateDefaultUserProfileAsync(long collegeId,long? institutionId)
+{
+    var users = new List<UserProfile>
+    {
+        new UserProfile
+        {
+            userid = $"{collegeId}1006",
+            password = BCrypt.Net.BCrypt.HashPassword("SuperAdmin@123"),
+            role = 6,
+            active = 1,
+            name = "Super Admin",
+            cl_col_id = collegeId,
+            makerdatetime = DateTime.UtcNow
+        },
+
+        new UserProfile
+        {
+            userid = $"{collegeId}1005",
+            password = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
+            role = 5,
+            active = 1,
+            name = "Admin",
+            cl_col_id = collegeId,
+            makerdatetime = DateTime.UtcNow
+        },
+
+        new UserProfile
+        {
+            userid = $"{collegeId}1001",
+            password = BCrypt.Net.BCrypt.HashPassword("Teacher@123"),
+            role = 1,
+            active = 1,
+            name = "Teacher",
+            cl_col_id = collegeId,
+            makerdatetime = DateTime.UtcNow
+        },
+
+        new UserProfile
+        {
+            userid = $"{collegeId}1002",
+            password = BCrypt.Net.BCrypt.HashPassword("Student@123"),
+            role = 2,
+            active = 1,
+            name = "Student",
+            cl_col_id = collegeId,
+            makerdatetime = DateTime.UtcNow
+        }
+
+
+    };
+
+    await _db.userprofiles.AddRangeAsync(users);
+    await _db.SaveChangesAsync();
+}
+
+
 }
 
 // ──────────────────────────────────────────────
@@ -97,6 +154,14 @@ public class CollegeRepository : ICollegeRepository
         await _db.SaveChangesAsync();
         return college.cl_col_id;
     }
+
+    public async Task<List<tbl_mst_collage>> GetByUniversityIdAsync(long universityId)
+    {
+        return await _db.tbl_mst_collages
+            .Where(x => x.university_id == universityId)
+            .OrderBy(x => x.cl_col_name)
+            .ToListAsync();
+    }
 }
 
 // ──────────────────────────────────────────────
@@ -152,6 +217,20 @@ public class SessionRepository : ISessionRepository
             _db.session_masters.Add(session);
         else
             _db.session_masters.Update(session);
+        await _db.SaveChangesAsync();
+    }
+    
+    public async Task<List<session_master>> GetByCollegeIdAsync(long collegeId)
+    {
+        return await _db.session_masters
+            .Where(x => x.cl_col_id == collegeId)
+            .OrderByDescending(x => x.session_id)
+            .ToListAsync();
+    }
+
+    public async Task DeleteAsync(session_master session)
+    {
+        _db.session_masters.Remove(session);
         await _db.SaveChangesAsync();
     }
 }
@@ -275,6 +354,24 @@ public class DegreeRepository : IDegreeRepository
         await _db.SaveChangesAsync();
     }
 
+    public async Task<List<degree_master>> GetByCollegeIdAsync(long collegeId)
+    {
+        return await _db.degree_masters
+            .Where(x => x.cl_col_id == collegeId)
+            .OrderBy(x => x.category_description)
+            .ToListAsync();
+    }
+
+     public async Task DeleteAsync(degree_master degree)
+    {
+        _db.degree_masters.Remove(degree);
+        await _db.SaveChangesAsync();
+    }
+
+    Task IDegreeRepository.GetByCollegeIdAsync(long collegeId)
+    {
+        return GetByCollegeIdAsync(collegeId);
+    }
 }
 
 public class BranchRepository : IBranchRepository
@@ -430,4 +527,117 @@ public class SemesterRepository : ISemesterRepository
 
         await _db.SaveChangesAsync();
     }
+}
+
+public class StudentRepository : IStudentRepository
+{
+    private readonly AppDbContext _db;
+
+    public StudentRepository(AppDbContext db)
+    {
+        _db = db;
+    }
+
+    public async Task<bool> ExistsAsync(
+        string mobileNo,
+        string email,
+        string fullName)
+    {
+        return await _db.student_details.AnyAsync(x =>
+            x.stud_mobile == mobileNo ||
+            x.email_id == email ||
+            x.full_name == fullName);
+    }
+
+    public async Task<long> GetNextStudentIdAsync()
+    {
+        return (await _db.student_details
+            .MaxAsync(x => (long?)x.student_id) ?? 0) + 1;
+    }
+
+    public async Task AddStudentAsync(student_detail student)
+    {
+        await _db.student_details.AddAsync(student);
+    }
+
+    public async Task AddUserProfileAsync(UserProfile profile)
+    {
+        await _db.userprofiles.AddAsync(profile);
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await _db.SaveChangesAsync();
+    }
+     public async Task<string> GenerateRollNoAsync(long collegeId, long sessionId,long branchId, long semesterId)
+    {
+    var college = await _db.tbl_mst_collages
+        .FirstOrDefaultAsync(x => x.cl_col_id == collegeId);
+
+    var session = await _db.session_masters
+        .FirstOrDefaultAsync(x => x.session_id == sessionId);
+
+    var semester = await _db.tbl_mst_semister_details
+        .FirstOrDefaultAsync(x => x.sm_sem_id == semesterId);
+
+    var branch = await _db.tbl_mst_col_branches
+        .FirstOrDefaultAsync(x => x.br_branch_id == branchId);
+
+    if (semester == null)
+    {
+        semester = await _db.tbl_mst_semister_details
+            .Where(x => x.br_branch_id == branchId)
+            .OrderBy(x => x.years)
+            .FirstOrDefaultAsync();
+    }
+
+    string yearName = semester?.years switch
+    {
+        369 => "1",
+        370 => "2",
+        371 => "3",
+        418 => "4",
+        _ => ""
+    };
+
+    int counter = 1;
+
+    string branchName;
+
+    // if (college.gr_id == 26)
+    //     branchName = branch.TallyParentName;
+    // else
+        branchName = branch.br_branch_id.ToString();
+
+    string prefix =
+        $"{college.cl_col_id}" +
+        $"{session.session_start_date.Value:yy}" +
+        $"{((college.institution_id == 234 || college.institution_id == 75)
+            ? branch.br_branch_id.ToString()
+            : RegexConvert.ToAlphaOnly(branchName.Replace(" ", "").ToUpper()) + yearName)}";
+
+    string rollNo = prefix + counter.ToString("D3");
+
+    while (await _db.student_details.AnyAsync(x => x.roll_no == rollNo))
+    {
+        counter++;
+        rollNo = prefix + counter.ToString("D3");
+    }
+
+    return rollNo;
+}
+
+     public async Task<student_detail?> GetByIdAsync(string rollNo)
+    {
+        return await _db.student_details
+            .FirstOrDefaultAsync(x => x.roll_no == rollNo);
+    }
+
+    public async Task<long> GenerateStudentIdAsync()
+    {
+        return (await _db.student_details
+            .MaxAsync(x => (long?)x.student_id) ?? 0) + 1;
+    }
+
+
 }

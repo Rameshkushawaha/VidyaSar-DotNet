@@ -106,4 +106,5 @@ public partial class UserProfile
     public virtual ICollection<tbl_mst_col_branch> tbl_mst_col_branches { get; set; } = new List<tbl_mst_col_branch>();
 
     public virtual ICollection<tbl_mst_semister_detail> tbl_mst_semister_details { get; set; } = new List<tbl_mst_semister_detail>();
+
 }

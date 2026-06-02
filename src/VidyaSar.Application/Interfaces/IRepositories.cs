@@ -7,6 +7,8 @@ public interface IUserRepository
 {
     Task<UserProfile?> FindByUseridAsync(string userid);
     Task<UserProfile?> FindByIdAsync(string userid);
+
+    Task CreateDefaultUserProfileAsync(long collegeId, long? institutionId);
     Task SaveAsync(UserProfile user);
 }
 
@@ -26,6 +28,8 @@ public interface ICollegeRepository
     Task<bool> ExistsBySchoolCodeExcludingIdAsync(string code, long excludeId);
     Task<tbl_mst_collage?> FindByIdAsync(long id);
     Task<long> SaveAsync(tbl_mst_collage college);
+
+    Task<List<tbl_mst_collage>> GetByUniversityIdAsync(long universityId);
 }
 
 public interface IEducationGroupRepository
@@ -41,17 +45,23 @@ public interface ISessionRepository
     Task<bool> ExistsByNameAndCollegeExcludingIdAsync(string name, long colId, long excludeId);
     Task<session_master?> FindByIdAsync(long id);
     Task SaveAsync(session_master session);
+    Task<List<session_master>> GetByCollegeIdAsync(long collegeId);
+
+    Task DeleteAsync(session_master session);
 }
 
 public interface IConfigurationRepository
 {
     Task CreateDefaultConfigurationsAsync(long collegeId);
+
 }
 
 public interface IDegreeRepository
 {
      Task<bool> ExistsByCategoryDescriptionAndCollegeExcludingIdAsync(string name, long colId, long excludeId);
     Task<degree_master?> FindByIdAsync(long? Id);
+    Task GetByCollegeIdAsync(long collegeId);
+
     Task SaveAsync(degree_master degree);
 }
 
@@ -92,4 +102,31 @@ public interface ISemesterRepository
     Task SaveAsync(tbl_mst_semister_detail semester);
 
     Task DeleteAsync(tbl_mst_semister_detail semester);
+}
+
+public interface IStudentRepository
+{
+    Task<bool> ExistsAsync(
+        string mobileNo,
+        string email,
+        string fullName);
+
+    Task<string> GenerateRollNoAsync(
+        long collegeId,
+        long sessionId,
+        long branchId,
+        long semesterId);
+
+    Task<long> GetNextStudentIdAsync();
+
+    Task AddStudentAsync(student_detail student);
+
+    Task AddUserProfileAsync(UserProfile profile);
+
+    Task SaveChangesAsync();
+    Task<long> GenerateStudentIdAsync();
+
+   Task<student_detail?> GetByIdAsync(string rollNo);
+
+
 }

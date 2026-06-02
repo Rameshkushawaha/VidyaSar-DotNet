@@ -39,7 +39,7 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IDegreeRepository,        DegreeRepository>();
         services.AddScoped<IBranchRepository ,       BranchRepository>();
         services.AddScoped<ISemesterRepository,      SemesterRepository>();
-
+        services.AddScoped<IStudentRepository,       StudentRepository>();
         // Services
         services.AddScoped<IJwtService,             JwtService>();
         services.AddScoped<IAuthService,            AuthService>();
@@ -51,6 +51,7 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IDegreeServices,         DegreeService>();
         services.AddScoped<IBranchService,          BranchService>();
         services.AddScoped<ISemesterService,        SemesterService>();
+        services.AddScoped<IStudentService,         StudentService>();
         return services;
     }
 }

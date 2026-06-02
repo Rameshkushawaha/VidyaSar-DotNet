@@ -239,3 +239,56 @@ public class SemesterResponseDto
 
     public string BitIsActive { get; set; }
 }
+
+public class AdmissionConfigurationDto
+{
+    public long CollegeId { get; set; }
+    public long SessionId { get; set; }
+    public string AdmissionStartDate { get; set; }
+    public string AdmissionEndDate { get; set; }
+    public string ApplicationFee { get; set; }
+    public string AdmissionFee { get; set; }
+    public string TotalFee { get; set; }
+}
+
+public class FeesConfigurationDto
+{
+    public long CollegeId { get; set; }
+    public long SessionId { get; set; }
+    public string TuitionFee { get; set; }
+    public string ExamFee { get; set; }
+    public string LibraryFee { get; set; }
+    public string SportsFee { get; set; }
+    public string OtherFee { get; set; }
+}
+
+public class StudentDto
+{
+    public string FirstName { get; set; }
+    public string MiddleName { get; set; }
+    public string LastName { get; set; }
+
+    public string FatherName { get; set; }
+
+    public string MotherName { get; set; }
+    public string MobileNo { get; set; }
+
+    public string EmailId { get; set; }
+
+    public long CollegeId { get; set; }
+
+    public long SessionId { get; set; }
+
+    public long BranchId { get; set; }
+
+    public long SemesterId { get; set; }
+
+    public long DegreeId { get; set; }
+
+    public DateTime? DateOfBirth { get; set; }
+
+    public long Gender { get; set; }
+    public long StudentCast { get; set; }
+    public long StudentBloodGroup { get; set; }
+    public string Address { get; set; }
+}

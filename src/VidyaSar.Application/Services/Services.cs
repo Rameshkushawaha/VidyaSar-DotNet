@@ -146,6 +146,47 @@ public class UniversityService : IUniversityService
         }
     }
 
+    public async Task<ApiResponse> GetUniversityByIdAsync(long id)
+     {
+       try
+       { 
+            var university = await _repo.FindByIdAsync(id);
+    
+            if (university == null)
+               return ApiResponse.Fail("Data Not Found.");
+    
+            return ApiResponse.Ok(
+                "Data Found Successfully.",
+                university);
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse.Fail(ex.Message);
+        }
+   }      
+    
+    public async Task<ApiResponse> DeleteUniversityAsync(long id)
+    {
+        try
+        {
+            var university = await _repo.FindByIdAsync(id);
+
+            if (university == null)
+                return ApiResponse.Fail("Data Not Found.");
+
+            university.bitisactive = true;
+            university.updatedatetime = DateTime.UtcNow;
+
+            await _repo.SaveAsync(university);
+
+            return ApiResponse.Ok(
+                "Data Deleted Successfully.");
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse.Fail(ex.Message);
+        }
+    }
 }
 
 // ──────────────────────────────────────────────
@@ -230,6 +271,37 @@ public class EducationGroupService : IEducationGroupService
         return ApiResponse.Ok("done",data);
     }
 
+    public async Task<ApiResponse> GetGroupByIdAsync(long id)
+    {
+        var data = await _repo.FindByIdAsync(id);
+        if (data == null)
+            return ApiResponse.Fail("Data Not Found.");
+
+        return ApiResponse.Ok("done", data);
+    }
+
+    public async Task<ApiResponse> DeleteGroupAsync(long id)
+    {
+        try
+        {
+            var group = await _repo.FindByIdAsync(id);
+
+            if (group == null)
+                return ApiResponse.Fail("Data Not Found.");
+
+            group.bitisactive = false;
+            group.updatedatetime = DateTime.UtcNow;
+
+            await _repo.SaveAsync(group);
+
+            return ApiResponse.Ok(
+                "Data Deleted Successfully.");
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse.Fail(ex.Message);
+        }
+    }
 }
 
 // ──────────────────────────────────────────────
@@ -300,6 +372,108 @@ public class SessionService : ISessionService
             return ApiResponse.Fail(ex.Message);
         }
     }
+    
+    public async Task<ApiResponse> GetSessionListAsync(long collegeId)
+        {
+            try
+            {
+                var data = await _repo.GetByCollegeIdAsync(collegeId);
+    
+                return ApiResponse.Ok(
+                    "Data Found Successfully.",
+                    data);
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse.Fail(ex.Message);
+            }
+        }
+    
+    public async Task<ApiResponse> GetSessionByIdAsync(long id)
+    {
+        try
+        {
+            var data = await _repo.FindByIdAsync(id);
+            if (data == null)
+                return ApiResponse.Fail("Data Not Found.");
+
+            return ApiResponse.Ok("Data Found Successfully.", data);
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse.Fail(ex.Message);
+        }
+    }
+
+    public async Task<ApiResponse> DeleteSessionAsync(long id)
+    {
+        try
+        {
+            var session = await _repo.FindByIdAsync(id);
+
+            if (session == null)
+                return ApiResponse.Fail("Data Not Found.");
+
+            session.bitisactive = false;
+
+            await _repo.SaveAsync(session);
+
+            return ApiResponse.Ok(
+                "Data Deleted Successfully.");
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse.Fail(ex.Message);
+        }
+    }
+    
+    public async Task<ApiResponse> ChangeCurrentSessionAsync(long collegeId, long sessionId)
+    {
+        try
+        {
+            var sessions = await _repo.GetByCollegeIdAsync(collegeId);
+
+            var newCurrent = sessions.FirstOrDefault(s => s.session_id == sessionId);
+            if (newCurrent == null)
+                return ApiResponse.Fail("Session Not Found.");
+
+            foreach (var session in sessions)
+            {
+                session.current_session = session.session_id == sessionId;
+                await _repo.SaveAsync(session);
+            }
+
+            return ApiResponse.Ok("Current Session Updated Successfully.");
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse.Fail(ex.Message);
+        }
+    }
+
+    public async Task<ApiResponse> ChangeCurrentAdmissionSessionAsync(long collegeId, long sessionId)
+    {
+        try
+        {
+            var sessions = await _repo.GetByCollegeIdAsync(collegeId);
+
+            var newCurrent = sessions.FirstOrDefault(s => s.session_id == sessionId);
+            if (newCurrent == null)
+                return ApiResponse.Fail("Session Not Found.");
+
+            foreach (var session in sessions)
+            {
+                session.admission_session = session.session_id == sessionId ? session.session_id : null;
+                await _repo.SaveAsync(session);
+            }
+
+            return ApiResponse.Ok("Current Admission Session Updated Successfully.");
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse.Fail(ex.Message);
+        }
+    }
 }
 
 // ──────────────────────────────────────────────
@@ -309,13 +483,14 @@ public class InstituteService : IInstituteService
 {
     private readonly ICollegeRepository _repo;
     private readonly IConfigurationRepository _configRepo;
-
-    public InstituteService(ICollegeRepository repo, IConfigurationRepository configRepo)
+    private readonly IUserRepository _userRepo;
+    public InstituteService(ICollegeRepository repo, IConfigurationRepository configRepo, IUserRepository userRepo)
     {
         _repo       = repo;
         _configRepo = configRepo;
+        _userRepo   = userRepo;
     }
-
+     
     public async Task<ApiResponse> AddUpdateInstituteAsync(InstituteDto dto, string userId)
     {
         try
@@ -348,7 +523,7 @@ public class InstituteService : IInstituteService
                 await _configRepo.CreateDefaultConfigurationsAsync(newId);
 
                 // Create default users
-                await CreateDefaultUsersAsync(newId, dto.InstitutionId);
+                await _userRepo.CreateDefaultUserProfileAsync(newId, dto.InstitutionId);
 
                 return ApiResponse.Ok("Institute Added Successfully", newId);
             }
@@ -391,6 +566,38 @@ public class InstituteService : IInstituteService
     // Placeholder — wired at infrastructure level if needed
     private Task CreateDefaultUsersAsync(long collegeId, long? institutionId) =>
         Task.CompletedTask;
+    
+    public async Task<ApiResponse> GetInstituteListAsync(long universityId)
+    {
+        try
+        {
+            var data = await _repo.GetByUniversityIdAsync(universityId);
+
+            return ApiResponse.Ok(
+                "Data Found Successfully.",
+                data);
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse.Fail(ex.Message);
+        }
+    }
+
+    public async Task<ApiResponse> GetInstituteByIdAsync(long id)
+    {
+        try
+        {
+            var data = await _repo.FindByIdAsync(id);
+            if (data == null)
+                return ApiResponse.Fail("Data Not Found.");
+
+            return ApiResponse.Ok("Data Found Successfully.", data);
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse.Fail(ex.Message);
+        }
+    }
 }
 
 
@@ -477,6 +684,57 @@ public class InstituteService : IInstituteService
                 };
             }
         }
+    public async Task<ApiResponse> GetDegreeListAsync(long collegeId)
+    {
+        try
+        {
+            await _repo.GetByCollegeIdAsync(collegeId);
+
+            return ApiResponse.Ok("Data Found Successfully.");
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse.Fail(ex.Message);
+        }
+    }
+
+    public async Task<ApiResponse> GetDegreeByIdAsync(long id)
+    {
+        try
+        {
+            var data = await _repo.FindByIdAsync(id);
+            if (data == null)
+                return ApiResponse.Fail("Data Not Found.");
+
+            return ApiResponse.Ok("Data Found Successfully.", data);
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse.Fail(ex.Message);
+        }
+    }
+
+    public async Task<ApiResponse> DeleteDegreeAsync(long id)
+    {
+        try
+        {
+            var degree = await _repo.FindByIdAsync(id);
+
+            if (degree == null)
+                return ApiResponse.Fail("Data Not Found.");
+
+            degree.bitisactive = false;
+
+            await _repo.SaveAsync(degree);
+
+            return ApiResponse.Ok(
+                "Data Deleted Successfully.");
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse.Fail(ex.Message);
+        }
+    }
 }
 
 // degree service
@@ -793,4 +1051,166 @@ public class SemesterService : ISemesterService
             return ApiResponse.Fail(ex.Message);
         }
     }
+}
+
+public class StudentService : IStudentService
+{
+    private readonly IStudentRepository _repo;
+
+    public StudentService(IStudentRepository repo)
+    {
+        _repo = repo;
+    }
+
+   public async Task<ApiResponse> AddStudentAsync(StudentDto dto){
+   
+    try
+    {
+        string fullName =
+            $"{dto.FirstName} {dto.MiddleName} {dto.LastName}"
+            .Replace("  ", " ")
+            .Trim();
+
+        bool exists = await _repo.ExistsAsync(
+            dto.MobileNo,
+            dto.EmailId,
+            fullName);
+
+        if (exists)
+        {
+            return ApiResponse.Fail(
+                "Student Already Exists.");
+        }
+
+        string rollNo =
+            await _repo.GenerateRollNoAsync(
+                dto.CollegeId,
+                dto.SessionId,
+                dto.BranchId,
+                dto.SemesterId);
+
+        long studentId =
+            await _repo.GenerateStudentIdAsync();
+
+        var student = new student_detail
+        {
+            student_id = studentId,
+
+            firstname = dto.FirstName,
+            middlename = dto.MiddleName,
+            lastname = dto.LastName,
+
+            full_name = fullName,
+
+            father_name = dto.FatherName,
+            mother_name = dto.MotherName,
+
+            stud_mobile = dto.MobileNo,
+            email_id = dto.EmailId,
+
+            cl_col_id = dto.CollegeId,
+            session_id = dto.SessionId,
+            br_branch_id = dto.BranchId,
+
+            current_semester = dto.SemesterId,
+            studentdegree = dto.DegreeId,
+
+            date_of_birth = dto.DateOfBirth,
+            studentgender = dto.Gender,
+
+            perm_address = dto.Address,
+
+            roll_no = rollNo,
+
+            dateofadmission =
+                DateOnly.FromDateTime(DateTime.UtcNow),
+
+            admissionyear = dto.SessionId,
+
+            admittedinbranch = dto.BranchId,
+
+            updatedatetime = DateTime.UtcNow,
+
+            status_id = 1,
+
+            student_cast = dto.StudentCast,
+            blood_groups = dto.StudentBloodGroup
+        };
+
+        await _repo.AddStudentAsync(student);
+
+        var profile = new UserProfile
+        {
+            userid = rollNo,
+
+            password = dto.MobileNo,
+
+            name = fullName,
+
+            firstname = dto.FirstName,
+            middlename = dto.MiddleName,
+            lastname = dto.LastName,
+
+            emailid = dto.EmailId,
+
+            telno = dto.MobileNo,
+
+            phone_no = long.TryParse(dto.MobileNo, out long phone)
+                ? phone
+                : 0,
+
+            role = 2,
+
+            active = 1,
+
+            makerdatetime = DateTime.UtcNow,
+
+            perm_address = dto.Address,
+            current_address = dto.Address,
+
+            cl_col_id = dto.CollegeId,
+            branch_id = dto.BranchId
+        };
+
+        await _repo.AddUserProfileAsync(profile);
+
+        await _repo.SaveChangesAsync();
+
+
+        return ApiResponse.Ok(
+            "Student Added Successfully.",
+            new
+            {
+                StudentId = studentId,
+                RollNo = rollNo,
+                UserId = rollNo
+            });
+    }
+    catch (Exception ex)
+    {
+    
+        return ApiResponse.Fail(ex.Message);
+    }
+}
+
+    public async Task<ApiResponse> GetStudentByIdAsync(string rollNo)
+    {
+        try
+        {
+            var student = await _repo.GetByIdAsync(rollNo);
+
+            if (student == null)
+                return ApiResponse.Fail("Data Not Found.");
+
+            return ApiResponse.Ok(
+                "Data Found Successfully.",
+                student);
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse.Fail(ex.Message);
+        }
+    }
+
+    
 }

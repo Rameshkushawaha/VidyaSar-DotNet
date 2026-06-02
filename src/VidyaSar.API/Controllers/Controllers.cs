@@ -96,6 +96,26 @@ public class UniversityController : ControllerBase
         var result = await _service.GetUniversityList(categoryId);
         return Ok(result);
     }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetUniversityById([FromRoute] long id)
+    {
+         var user = HttpContext.GetLoggedInUser();
+        if (user is null)
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
+
+        var result = await _service.GetUniversityByIdAsync(id);
+        return Ok(result);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteUniversity([FromRoute] long id)
+    {         var user = HttpContext.GetLoggedInUser();
+        if (user is null)
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));       
+        var result = await _service.DeleteUniversityAsync(id);
+        return Ok(result);
+    }    
 }
 
 // ──────────────────────────────────────────────
@@ -132,6 +152,8 @@ public class EducationGroupController : ControllerBase
         var result = await _service.GetGroupListAsync();
         return Ok(result);
     }
+
+
 }
 
 // ──────────────────────────────────────────────
@@ -151,6 +173,54 @@ public class SessionController : ControllerBase
     public async Task<IActionResult> AddUpdateSession([FromBody] SessionDto dto)
     {
         var result = await _service.AddUpdateSessionAsync(dto);
+        return Ok(result);
+    }
+
+    [HttpGet("getSessionList")]
+    public async Task<IActionResult> GetSessionList([FromHeader] long collegeId)
+    {
+         var user = HttpContext.GetLoggedInUser();
+        if (user is null)
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
+        var result = await _service.GetSessionListAsync(collegeId);
+        return Ok(result);
+    }
+
+    [HttpGet("getSessionById")]
+    public async Task<IActionResult> GetSessionById([FromHeader] long id)
+    {
+         var user = HttpContext.GetLoggedInUser();
+        if (user is null)
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
+        var result = await _service.GetSessionByIdAsync(id);
+        return Ok(result);
+    }
+
+    [HttpDelete("deleteSession")]
+    public async Task<IActionResult> DeleteSession([FromHeader] long id)
+    {
+         var user = HttpContext.GetLoggedInUser();
+        if (user is null)
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
+        var result = await _service.DeleteSessionAsync(id);
+        return Ok(result);
+    }
+    
+    public async Task<IActionResult> ChangeCurrentSession([FromHeader] long collegeId, [FromHeader] long sessionId)
+    {
+         var user = HttpContext.GetLoggedInUser();
+        if (user is null)
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
+        var result = await _service.ChangeCurrentSessionAsync(collegeId, sessionId);
+        return Ok(result);
+    }
+
+    public async Task<IActionResult> ChangeCurrentAdmissionSession([FromHeader] long collegeId, [FromHeader] long sessionId)
+    {
+         var user = HttpContext.GetLoggedInUser();
+        if (user is null)
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
+        var result = await _service.ChangeCurrentAdmissionSessionAsync(collegeId, sessionId);
         return Ok(result);
     }
 }
@@ -178,6 +248,26 @@ public class InstituteController : ControllerBase
         var result = await _service.AddUpdateInstituteAsync(dto, user.Userid);
         return Ok(result);
     }
+
+    [HttpGet("getInstituteList")]
+    public async Task<IActionResult> GetInstituteList([FromHeader] long universityId)
+    {
+         var user = HttpContext.GetLoggedInUser();
+        if (user is null)
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
+        var result = await _service.GetInstituteListAsync(universityId);
+        return Ok(result);
+    }
+
+    [HttpGet("getInstituteById")]
+    public async Task<IActionResult> GetInstituteById([FromHeader] long id)
+    {
+         var user = HttpContext.GetLoggedInUser();
+        if (user is null)
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
+        var result = await _service.GetInstituteByIdAsync(id);
+        return Ok(result);
+    }
 }
 
 // ──────────────────────────────────────────────
@@ -200,6 +290,42 @@ public class DegreeController : ControllerBase
         if (user is null)
             return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
         var result = await _service.AddUpdateDegreeAsync(dto,user.Userid);
+        return Ok(result);
+    }
+
+    [HttpGet("getDegreeList")]
+    public async Task<IActionResult> GetDegreeList([FromHeader] long collegeId)
+    {
+         var user = HttpContext.GetLoggedInUser();
+        if (user is null)
+        {
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
+        }
+        
+        var result = await _service.GetDegreeListAsync(collegeId);
+        return Ok(result);  
+    }
+
+    [HttpGet("getDegreeById")]
+    public async Task<IActionResult> GetDegreeById([FromHeader] long id)
+    {
+         var user = HttpContext.GetLoggedInUser();
+        if (user is null)       
+        {
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));
+        }
+        var result = await _service.GetDegreeByIdAsync(id);
+        return Ok(result);
+    }
+
+    [HttpDelete("deleteDegree")]
+    public async Task<IActionResult> DeleteDegree([FromHeader] long id)
+    {
+         var user = HttpContext.GetLoggedInUser();
+        if (user is null)        
+            return Unauthorized(ApiResponse.Fail("Unauthorized Access"));  
+
+        var result = await _service.DeleteDegreeAsync(id);
         return Ok(result);
     }
 }
