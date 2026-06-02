@@ -82,14 +82,6 @@ public interface ISemesterService
     Task<ApiResponse> GetPagedAsync(PaginationDto dto);
 }
 
-public interface IConfigurationService
-{
-    Task<ApiResponse> CreateDefaultConfigurationsAsync(long collegeId);
-
-    Task<ApiResponse> GetAdmissionConfigurationByCollegeIdAsync(long collegeId);
-
-    Task<ApiResponse> UpdateAdmissionConfigurationAsync(AdmissionConfigurationDto dto);
-}
 public interface IStudentService
 {
     Task<ApiResponse> AddStudentAsync(
