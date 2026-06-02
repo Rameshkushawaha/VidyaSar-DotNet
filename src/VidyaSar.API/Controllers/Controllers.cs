@@ -206,6 +206,7 @@ public class SessionController : ControllerBase
         return Ok(result);
     }
     
+    [HttpPost("changeCurrentSession")]
     public async Task<IActionResult> ChangeCurrentSession([FromHeader] long collegeId, [FromHeader] long sessionId)
     {
          var user = HttpContext.GetLoggedInUser();
@@ -215,6 +216,7 @@ public class SessionController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost("changeCurrentAdmissionSession")]
     public async Task<IActionResult> ChangeCurrentAdmissionSession([FromHeader] long collegeId, [FromHeader] long sessionId)
     {
          var user = HttpContext.GetLoggedInUser();

@@ -39,7 +39,8 @@ public class UserRepository : IUserRepository
             active = 1,
             name = "Super Admin",
             cl_col_id = collegeId,
-            makerdatetime = DateTime.UtcNow
+            makerdatetime = DateTime.UtcNow,
+            encryptedpassword = "SuperAdmin@123"
         },
 
         new UserProfile
@@ -50,7 +51,8 @@ public class UserRepository : IUserRepository
             active = 1,
             name = "Admin",
             cl_col_id = collegeId,
-            makerdatetime = DateTime.UtcNow
+            makerdatetime = DateTime.UtcNow,
+            encryptedpassword = "Admin@123"
         },
 
         new UserProfile
@@ -61,7 +63,8 @@ public class UserRepository : IUserRepository
             active = 1,
             name = "Teacher",
             cl_col_id = collegeId,
-            makerdatetime = DateTime.UtcNow
+            makerdatetime = DateTime.UtcNow,
+            encryptedpassword = "Teacher@123"
         },
 
         new UserProfile
@@ -72,7 +75,8 @@ public class UserRepository : IUserRepository
             active = 1,
             name = "Student",
             cl_col_id = collegeId,
-            makerdatetime = DateTime.UtcNow
+            makerdatetime = DateTime.UtcNow,
+            encryptedpassword = "Student@123"
         }
 
 

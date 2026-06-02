@@ -1143,8 +1143,8 @@ public class StudentService : IStudentService
         {
             userid = rollNo,
 
-            password = dto.MobileNo,
-
+            password = BCrypt.Net.BCrypt.HashPassword("Password@123"),
+            encryptedpassword = "Password@123",
             name = fullName,
 
             firstname = dto.FirstName,
